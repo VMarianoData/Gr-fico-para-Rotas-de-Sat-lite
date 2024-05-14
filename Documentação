@@ -1,0 +1,317 @@
+'''
+Sumário:
+
+    1° Instalação de Bibliotecas
+    2° Importação de Bibliotecas
+    3° Função calcular_direcao
+    4° Coleta de Informações dos Satélites
+    5° Criação DataFrame
+    6° Carregamento do Mapa do Mundo
+    Plotagem das Trajetórias e Locais Atuais
+
+
+1° Instalação de Bibliotecas:
+
+    Código para o terminal:
+
+    pip install matplotlib
+    pip install geopandas
+    pip install pandas
+    pip install shapely
+
+    Explicação:
+
+    Para utilizar o programa é necessário instalar essas bibliotecas utilizando o pip (gerenciador de pacotes do Python). Execute os seguintes comandos em seu terminal ou prompt de comando:
+
+2° Importação de Bibliotecas:
+
+    Código:
+
+    import matplotlib.pyplot as plt
+    import geopandas as gpd
+    from shapely.geometry import Point, LineString
+    import pandas as pd
+    import numpy as np
+
+    Explicação:
+
+    - Matplotlib (matplotlib.pyplot): 
+    
+        É uma biblioteca amplamente utilizada para criação de gráficos e visualizações em Python.
+
+    - Geopandas (geopandas): 
+    
+        Extensão da biblioteca Pandas que facilita a manipulação e análise de dados geoespaciais.
+
+    - Shapely (shapely.geometry): 
+    
+        Permite a criação e manipulação de geometrias espaciais, como pontos, linhas e polígonos.
+
+    - Pandas (pandas): 
+    
+        Biblioteca essencial para manipulação e análise de dados tabulares.
+    
+    - Numpy (numpy): 
+        
+        Fornece suporte para arrays e funções matemáticas eficientes em Python.    
+
+3° Função calcular_direcao:
+
+    Código:
+
+    def calcular_direcao(x, y):
+    dx = np.gradient(x)
+    dy = np.gradient(y)
+    return dx, dy
+
+    Explicação:
+
+    - calcular_direcao(x, y): 
+        
+        Esta função calcula a direção (derivada) ao longo de uma trajetória definida por coordenadas x e y.
+
+    - np.gradient(x) e np.gradient(y): 
+        
+        São utilizados para calcular a derivada ao longo das coordenadas x e y, respectivamente.
+
+4° Coleta de Informações dos Satélites:
+
+    Código:
+
+    num_satelites = int(input("Digite o número de satélites: "))
+    dados_satelites = []
+    cores = ['red', 'blue', 'green', 'yellow', 'purple', 'orange']
+
+    for i in range(num_satelites):
+        nome = input(f"Digite o nome do satélite {i+1}: ")
+        trajetoria = input(f"Digite a trajetória do satélite {i+1} (formato: x1,y1;x2,y2;...): ")
+        local_atual = input(f"Digite a localização atual do satélite {i+1} (formato: x,y): ")
+        
+        # Processamento das entradas para criar objetos Point e LineString
+        pontos = [tuple(map(float, p.split(','))) for p in trajetoria.split(';')]
+        local_atual = tuple(map(float, local_atual.split(',')))
+        
+        # Adiciona os dados do satélite a uma lista
+        dados_satelites.append({'nome': nome, 'trajetoria': LineString(pontos), 'local_atual': Point(local_atual)})
+
+    Explicação:
+
+    - num_satelites = int(input("Digite o número de satélites: ")):
+
+        Esta linha solicita ao usuário que insira o número de satélites que deseja adicionar. O valor é convertido para um inteiro usando int() e armazenado na variável num_satelites.
+    
+    - dados_satelites = []:
+
+        Inicializa uma lista vazia chamada dados_satelites que será usada para armazenar informações sobre os satélites.
+
+    - cores = []:
+
+        define uma lista de cores que será utilizada para atribuir cores diferentes nas rotas de satélites para serem plotados no mapa.
+
+    - for i in range(num_satelites)::
+
+        Este loop for é usado para iterar sobre cada satélite, de 0 até num_satelites - 1.
+
+    - nome = input(f"Digite o nome do satélite {i+1}: "):
+
+        Solicita ao usuário que insira o nome do satélite atual. A expressão f"..." é uma forma de formatação de string que permite incluir valores de variáveis dentro da string.
+
+    - trajetoria = input(f"Digite a trajetória do satélite {i+1} (formato: x1,y1;x2,y2;...): "):
+
+        Pede ao usuário que insira a trajetória do satélite atual, no formato de coordenadas separadas por ponto e vírgula (x1,y1;x2,y2;...).
+
+        Exemplo: 10,30;-8,6;4,8
+        
+            10,30 Define o ponto inicial da rota
+
+            -8,6  Define o ponto intermediario da rota
+
+            4,8   Define o Ponto final da rota
+
+            A ","(vigulra) separa o "x" do "y", que seria representado por (x,y), já o ";"(Ponto e virgula) separa um ponto do outro, possibilitando colocar quantos pontos forem desejados pelo usuário dentro da mesma rota de um mesmo objeto.
+
+    - local_atual = input(f"Digite a localização atual do satélite {i+1} (formato: x,y): "):
+
+        Solicita ao usuário que insira a localização atual do satélite atual, no formato de coordenadas x e y separadas por vírgula.
+
+    - pontos = [tuple(map(float, p.split(','))) for p in trajetoria.split(';')]:
+
+        Esta linha divide a string trajetoria em uma lista de strings separadas por ; usando trajetoria.split(';'). Em seguida, cada uma dessas strings é dividida por , usando p.split(',') para obter uma lista de strings contendo coordenadas x,y.
+
+        A função map(float, ...) é aplicada a cada uma dessas strings para converter os valores de string em números de ponto flutuante (float).
+
+        Finalmente, a função tuple() é usada para converter cada lista de coordenadas em uma tupla, e isso é feito para cada ponto na trajetória do satélite.
+
+    - local_atual = tuple(map(float, local_atual.split(','))):
+
+        Semelhante à etapa anterior, esta linha divide a string local_atual em coordenadas x e y usando local_atual.split(','), converte essas strings em ponto flutuante (float) e depois cria uma tupla contendo esses valores.
+
+    - dados_satelites.append({'nome': nome, 'trajetoria': LineString(pontos), 'local_atual': Point(local_atual)}):
+
+        Adiciona um dicionário contendo informações sobre o satélite atual à lista dados_satelites.
+
+        Cada dicionário contém três chaves:
+        'nome': O nome do satélite.
+
+        'trajetoria': Um objeto LineString do Shapely contendo a trajetória do satélite, representada pelos pontos convertidos em uma linha.
+
+        'local_atual': Um objeto Point do Shapely contendo a localização atual do satélite.
+
+5° Criação DataFrame
+
+    Código:
+
+        df = pd.DataFrame(dados_satelites)
+
+    Explicação:
+
+    - df = pd.DataFrame(dados_satelites)
+    
+         cria um DataFrame do Pandas a partir de uma lista de dicionários chamada dados_satelites.
+
+    - pd.DataFrame():
+
+        é um construtor de DataFrame do Pandas que cria um novo DataFrame a partir de uma lista, dicionário ou de outros objetos estruturados.
+
+    - dados_satelites:
+
+        é uma lista de dicionários, onde cada dicionário contém informações sobre um satélite, como nome, trajetória (representada por um objeto LineString do Shapely) e localização atual (representada por um objeto Point do Shapely).
+
+6° Carregamento do Mapa do Mundo: 
+
+    Código:
+
+        world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+
+    Explicação:
+
+    - world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres')): 
+    
+        carrega um conjunto de dados geoespaciais usando a biblioteca GeoPandas. 
+
+    - gpd.datasets.get_path('naturalearth_lowres'):
+    
+        gpd.datasets.get_path('naturalearth_lowres') é uma função do GeoPandas que retorna o caminho para um conjunto de dados geoespaciais chamado 'naturalearth_lowres'.
+
+        Este conjunto de dados é um exemplo incluído na biblioteca GeoPandas e contém informações de baixa resolução sobre países do mundo.
+    
+    - gpd.read_file(...):
+
+        gpd.read_file(...) é uma função do GeoPandas que carrega um arquivo geoespacial a partir do caminho especificado.
+
+        Neste caso, o caminho é fornecido pelo resultado de gpd.datasets.get_path('naturalearth_lowres').
+
+    - world = gpd.read_file(...):
+
+        Esta linha de código carrega o arquivo geoespacial 'naturalearth_lowres' e armazena seu conteúdo em um GeoDataFrame chamado world.
+
+        Um GeoDataFrame é semelhante a um DataFrame do Pandas, mas também inclui uma coluna especial chamada geometry que contém geometrias espaciais (como polígonos, linhas ou pontos) associadas aos dados.
+
+    - Utilização do GeoDataFrame world:
+
+        O GeoDataFrame world agora contém informações geoespaciais sobre países do mundo.
+
+        Pode-se acessar e manipular esses dados da mesma forma que um DataFrame do Pandas, mas também é possível realizar operações espaciais, como plotagem de mapas e análise geoespacial.
+
+7° Plotagem das Trajetórias e Locais Atuais:
+
+    Código:
+
+        fig, ax = plt.subplots(1, 1, figsize=(15, 10))
+        world.plot(ax=ax, color='white', edgecolor='black')
+
+        for _, row in df.iterrows():
+            trajetoria = row['trajetoria']
+            x, y = trajetoria.xy
+            dx, dy = calcular_direcao(x, y)
+
+            # Plotar trajetória
+            ax.plot(x[:-1], y[:-1], label=row['nome'], color='red', linewidth=0.5)
+
+            # Plotar direção
+            ax.quiver(x[-1:], y[-1:], dx[-1:], dy[-1:], scale_units='xy', angles='xy', scale=1, color='red', width=0.005, headlength=3, headwidth=1.5, headaxislength=2.25)
+
+            # Plotar local atual
+            ax.plot(row['local_atual'].x, row['local_atual'].y, 'o', color='black')
+
+        plt.legend()
+        plt.show()
+
+    Explicação:
+
+    - fig, ax = plt.subplots(1, 1, figsize=(15, 10)):
+
+        Cria uma figura (fig) e um único eixo (ax) utilizando plt.subplots().
+
+        1, 1 especifica que queremos apenas um subplot (um único gráfico).
+
+        figsize=(15, 10) define o tamanho da figura como 15 unidades de largura por 10 unidades de altura.
+    
+    - world.plot(ax=ax, color='white', edgecolor='black'):
+
+        Plota o mapa do mundo (world) no eixo (ax) criado anteriormente.
+
+        color='white' define a cor de preenchimento do mapa como branca.
+
+        edgecolor='black' define a cor das bordas do mapa como preta.
+
+    - for _, row in df.iterrows():
+
+        Itera sobre cada linha (row) no DataFrame df, onde cada linha representa um satélite com suas informações.
+
+    - trajetoria = row['trajetoria']:
+
+        Obtém a trajetória do satélite atual (row) a partir da coluna 'trajetoria' do DataFrame.
+
+    - x, y = trajetoria.xy:
+
+        Extrai as coordenadas x e y da trajetória do satélite atual.
+
+    - dx, dy = calcular_direcao(x, y):
+
+        Calcula a direção (dx e dy) ao longo da trajetória do satélite utilizando a função calcular_direcao.
+
+    - ax.plot(x[:-1], y[:-1], label=row['nome'], color='red', linewidth=0.5):
+
+        Plota a trajetória do satélite no mapa.
+
+        x[:-1], y[:-1] são as coordenadas da trajetória, excluindo o último ponto para evitar sobreposição com a seta de direção.
+
+        label=row['nome'] atribui o nome do satélite como rótulo para a legenda.
+
+        color='red' define a cor da trajetória como vermelha.
+
+        linewidth=0.5 define a largura da linha da trajetória como 0.5 unidades.
+
+    - ax.quiver(x[-1:], y[-1:], dx[-1:], dy[-1:], scale_units='xy', angles='xy', scale=1, color='red', width=0.005, headlength=3, headwidth=1.5, headaxislength=2.25):
+
+        Plota uma seta (indicador de direção) na última posição da trajetória.
+
+        x[-1:], y[-1:], dx[-1:], dy[-1:] especifica as coordenadas e direção da seta.
+
+        scale_units='xy' e angles='xy' definem as unidades e ângulos de escala da seta.
+
+        scale=1 define a escala da seta.
+
+        color='red' define a cor da seta como vermelha.
+
+        width=0.005 define a largura da seta como 0.005 unidades.
+
+        headlength=3, headwidth=1.5, headaxislength=2.25 definem os parâmetros da cabeça da seta.
+
+    - ax.plot(row['local_atual'].x, row['local_atual'].y, 'o', color='black'):
+
+        Plota o local atual do satélite como um ponto ('o') no mapa.
+
+        row['local_atual'].x e row['local_atual'].y são as coordenadas x e y do ponto.
+
+        color='black' define a cor do ponto como preta.
+
+    - plt.legend() e plt.show():
+
+        plt.legend() exibe a legenda com os nomes dos satélites no gráfico.
+
+        plt.show() exibe o gráfico final com todas as trajetórias, direções e locais atuais dos satélites sobre o mapa.
+
+'''
+
